@@ -99,7 +99,7 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator implements Passw
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
 //        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
         //return new RedirectResponse($this->urlGenerator->generate('TestApi'));
-        return $this->json(["data"=>'user_connected'];
+        return $this->json(["data"=>'user_connected']);
     }
 
     protected function getLoginUrl()
