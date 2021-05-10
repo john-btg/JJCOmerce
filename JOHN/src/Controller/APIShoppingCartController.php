@@ -22,8 +22,9 @@ class APIShoppingCartController extends AbstractController
      */
     public function getCart(SerializerInterface $serialize): Response
     {
-
-        $product= $this->getDoctrine()->getRepository('App:User')->find(1);
+        $user = $this->getUser();
+        $userid = $user->getId();
+        $product= $this->getDoctrine()->getRepository('App:User')->find($userid);
 
         $test=$product->getShoppingCart()->getValues();
         dump($test);
@@ -43,8 +44,10 @@ class APIShoppingCartController extends AbstractController
      */
     public function addShoppingCart(int $productId): Response
     {
+        $user = $this->getUser();
+        $userid = $user->getId();
         $articles = $this->getDoctrine()->getRepository('App:Catalog')->find($productId);
-        $user=$this->getDoctrine()->getRepository('App:User')->find(1);
+        $user=$this->getDoctrine()->getRepository('App:User')->find($userid);
         $user->addShoppingCart($articles);
        // dump($user->getShoppingCart());
         $em=$this->getDoctrine()->getManager();
@@ -62,8 +65,10 @@ class APIShoppingCartController extends AbstractController
      */
     public function delShoppingCart(int $productId): Response
     {
+        $user = $this->getUser();
+        $userid = $user->getId();
         $articles = $this->getDoctrine()->getRepository('App:Catalog')->find($productId);
-        $user=$this->getDoctrine()->getRepository('App:User')->find(1);
+        $user=$this->getDoctrine()->getRepository('App:User')->find($userid);
         $user->removeShoppingCart($articles);
         dump($user->getShoppingCart());
         $em=$this->getDoctrine()->getManager();
@@ -79,8 +84,9 @@ class APIShoppingCartController extends AbstractController
      */
     public function validate(SerializerInterface $serialize): Response
     {
-
-        $user= $this->getDoctrine()->getRepository('App:User')->find(1);
+        $user = $this->getUser();
+        $userid = $user->getId();
+        $user= $this->getDoctrine()->getRepository('App:User')->find($userid);
 
         $tabProd=$user->getShoppingCart()->getValues();
 
