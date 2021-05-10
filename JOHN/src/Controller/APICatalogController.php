@@ -8,6 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+
 
 class APICatalogController extends AbstractController
 {
@@ -72,39 +74,88 @@ class APICatalogController extends AbstractController
 
     }
 
-
     /**
-     * @Route("/api/product", methods={"PUT"},name="ajout Product")
+     * @Route("/api/product/{id}", methods={"PUT"},name="ModifieProduct")
      */
-
-    function addProduct():Response
+    function ModifieProduct(Request $request,$id,SerializerInterface $serialize):Response
     {
-        $catalog=new Catalog();
-        $catalog->setName(" Item 3000")
-            ->setDescription(" Best item in the shop !")
-            ->setPhoto( "https://path/to/image.png")
-            ->setPrice(13.37);
-        $em=$this->getDoctrine()->getManager();
         try{
-            $em->persist($catalog);
+            $em = $this->getDoctrine()->getManager();
+            $parametersAsArray = [];
+            if ($data = $request->getContent()) {
+                $parametersAsArray = json_decode($data, true);
+            }
+
+            $post = $em->getRepository('App:Catalog')->find($id);
+
+            if($parametersAsArray['description'] == null || $parametersAsArray['photo'] == null || $parametersAsArray['name'] == null  || $parametersAsArray['price'] == null   ){
+                $response = new Response();
+                $response->setContent(json_encode([
+                    'error' => "Requete refuser: un parametre est null !",
+                ]));
+                $response->headers->set('Content-Type', 'application/json');
+                $response->setStatusCode(400);
+                return $response;
+
+            }
+
+            $post->setName($parametersAsArray['name']);
+            $post->setDescription($parametersAsArray['description']);
+            $post->setPrice($parametersAsArray['price']);
+            $post->setPhoto($parametersAsArray['photo']);
+            $em->persist($post);
             $em->flush();
+            $response = new Response();
+            $response->setContent(json_encode([
+                'Success' => "La modification a ete effectue !",
+            ]));
+            $response->headers->set('Content-Type', 'application/json');
+            $response->setStatusCode(200);
+            return $response;
+
         }catch(\Exception $e){
             $response = new Response();
             $response->setContent(json_encode([
-                'Error'=>"Probleme interne du serveur, Ajout non effectué",
+                'error' => "Probleme interne Server !",
             ]));
             $response->headers->set('Content-Type', 'application/json');
             $response->setStatusCode(500);
             return $response;
         }
+    }
 
-        $response = new Response();
-        $response->setContent(json_encode([
-            'INFO' => "Ajout de produit faite",
-        ]));
-        $response->headers->set('Content-Type', 'application/json');
-        $response->setStatusCode(201);
-        return $response;
+
+    /**
+     * @Route("/api/product", methods={"POST"},name="NouveauProduit")
+     */
+    function addProduct(Request $request,serializerInterface $serialize):Response
+    {
+        try{
+            $data = $request->getContent();
+            $article = $serialize->deserialize($data,'App\Entity\Catalog', 'json');
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($article);
+            $em->flush();
+            $response = new Response();
+            $response->setContent(json_encode([
+                'Success' => "Creation du produit effectuer !",
+            ]));
+            $response->headers->set('Content-Type', 'application/json');
+            $response->setStatusCode(201);
+            return $response;
+
+        }
+
+        catch(\Exception $e){
+
+            $response = new Response();
+            $response->setContent(json_encode([
+                'error' => "Probleme interne Server !",
+            ]));
+            $response->headers->set('Content-Type', 'application/json');
+            $response->setStatusCode(500);
+            return $response;
+        }
     }
 
     /**
