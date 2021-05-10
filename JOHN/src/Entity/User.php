@@ -34,7 +34,7 @@ class User implements UserInterface
      */
     private $orders_id = [];
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(type="string", length=180)
      */
     private $email;
 
