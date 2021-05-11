@@ -12,6 +12,7 @@ return [
         '/api/product' => [[['_route' => 'NouveauProduit', '_controller' => 'App\\Controller\\APICatalogController::addProduct'], null, ['POST' => 0], null, false, false, null]],
         '/api/orders' => [[['_route' => 'orderAll', '_controller' => 'App\\Controller\\APIOrderController::getOrder'], null, ['GET' => 0], null, false, false, null]],
         '/api/cart' => [[['_route' => 'getCart', '_controller' => 'App\\Controller\\APIShoppingCartController::getCart'], null, ['GET' => 0, 'HEAD' => 1], null, false, false, null]],
+        '/api/user' => [[['_route' => 'infoUser', '_controller' => 'App\\Controller\\APIUserController::listAllProduct'], null, ['GET' => 0], null, false, false, null]],
         '/api/login' => [
             [['_route' => 'login', '_controller' => 'App\\Controller\\LoginController::login'], null, null, null, false, false, null],
             [['_route' => 'api_login_check'], null, null, null, false, false, null],
